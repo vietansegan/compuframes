@@ -10,8 +10,6 @@ import java.io.File;
 import model.MultiLabelEvaluator;
 import model.RandomBaseline;
 import mulan.classifier.transformation.BinaryRelevance;
-import mulan.evaluation.Evaluation;
-import mulan.evaluation.Evaluator;
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.Options;
 import util.CLIUtils;
@@ -26,8 +24,6 @@ import weka.classifiers.trees.J48;
  */
 public class MultilabelExperiment extends AbstractExperiment<CompuframesDataset> {
 
-    public static final String PREDICTION_FILE = "predictions.txt";
-    public static final String RESULT_FILE = "results.txt";
     protected static CorpusProcessor corpProc;
     private String datasetName;
     private String datasetFolder;
@@ -41,7 +37,7 @@ public class MultilabelExperiment extends AbstractExperiment<CompuframesDataset>
         datasetName = CLIUtils.getStringArgument(cmd, "dataset", "compuframes");
         datasetFolder = CLIUtils.getStringArgument(cmd, "data-folder", "data");
         data = new CompuframesDataset(datasetName, datasetFolder);
-
+        experimentPath = CLIUtils.getStringArgument(cmd, "expt-folder", "experiment");
         evaluator = new MultiLabelEvaluator();
     }
 
@@ -197,7 +193,7 @@ public class MultilabelExperiment extends AbstractExperiment<CompuframesDataset>
             addOption("dataset", "Folder storing processed data");
             addOption("data-folder", "Folder storing processed data");
             addOption("format-folder", "Format folder");
-            addOption("model-folder", "Model folder");
+            addOption("expt-folder", "Experiment folder");
 
             addOption("run-mode", "Run mode");
             addOption("model", "Model");
