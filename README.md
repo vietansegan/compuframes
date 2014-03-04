@@ -59,3 +59,10 @@ Working example:
 java -Xmx10000M -Xms10000M -cp 'dist/compuframes.jar:lib/*' experiment.MultilabelExperiment --json-file data/rounds_4-9_singly_coded.json -v -d --run-mode create-cv -s -l --u 5 --b 10 --bs 5 -s -l --V 10000 --num-folds 5 --tr2dev-ratio 0.8 --cv-folder data/cv
 ```
     
+## Run document-level multi-label model
+```
+java -Xmx10000M -Xms10000M -cp 'dist/compuframes.jar:lib/*:../segan/dist/lib/*:../segan/dist/*' experiment.MultilabelExperiment -v -d --dataset compuframes --run-mode run --num-folds <number-of-folds> --cv-folder <cross-validation-folder> --model <model-name> --expt-folder <experiment-folder> --fold <fold-number>
+```
+- `<model-name>`: the name of a supported model
+- `<experiment-folder>`: folder to store the learned model and prediction results
+- `<fold-number>`: the fold to be run. If this is not specified, all folds in the cross-validation folder will be run. 
