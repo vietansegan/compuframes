@@ -65,4 +65,9 @@ java -Xmx10000M -Xms10000M -cp 'dist/compuframes.jar:lib/*:../segan/dist/lib/*:.
 ```
 - `<model-name>`: the name of a supported model
 - `<experiment-folder>`: folder to store the learned model and prediction results
-- `<fold-number>`: the fold to be run. If this is not specified, all folds in the cross-validation folder will be run. 
+- `<fold-number>`: the fold to be run. If this is not specified, all folds in the cross-validation folder will be run.
+
+Working example: running random baseline
+```
+java -Xmx10000M -Xms10000M -cp 'dist/compuframes.jar:lib/*:../segan/dist/lib/*:../segan/dist/*' experiment.MultilabelExperiment -v -d --dataset compuframes --run-mode run --num-folds 5 --cv-folder data/cv --model random --expt-folder experiments --fold 0
+```
