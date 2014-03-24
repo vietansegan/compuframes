@@ -25,11 +25,12 @@ compuframes
 ### To perform preprocessing of the text data on the whole dataset
 
 ```
-java -Xmx10000M -Xms10000M -cp 'dist/compuframes.jar:lib/*' experiment.MultilabelExperiment --json-file <json-file> -v -d --data-folder <processed-data-folder> --format-folder <format-folder> --run-mode preprocess -s -l --u 5 --b 10 --bs 5 --V 10000
+java -Xmx10000M -Xms10000M -cp 'dist/compuframes.jar:lib/*' experiment.MultilabelExperiment --json-file <json-file> -v -d --data-folder <processed-data-folder> --format-folder <format-folder> --run-mode preprocess -s -l --u 5 --b 10 --bs 5 --V 10000 --doc-type <document-type>
 ```
 - `<json-file>`: path to the JSON file
 - `<processed-data-folder>`: path to the folder containing processed data
 - `<format-folder>`: subfolder of `<processed-data-folder>` to store one specific instance of processed data (e.g., with a specific set of preprocessing parameter of the same dataset)
+- `<document-type>`: the type of documents to consider. This can be either "tobacco" or "immigration". If this is not set, all documents are considered. 
 - `-s`: whether stopwords are removed (stopwords are stored in `lib/stopwords.txt`)
 - `-l`: whether stemming is performed
 - `--u`: the minimum raw count of unigrams
