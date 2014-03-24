@@ -22,6 +22,10 @@ import util.IOUtils;
  */
 public class CompuframesDataset extends LabelTextDataset {
 
+    public static enum DocType {
+
+        IMMIGRATION, TOBACCO, ALL
+    }
     public static final String sentInfoExt = ".sentinfo";
     // raw input from JSON file
     private HashMap<String, Document> documents;
@@ -29,7 +33,6 @@ public class CompuframesDataset extends LabelTextDataset {
     private String[][] sentences;
     private double[][][] sentenceAnnotations;
     private int[][][] sentenceLabels;
-    
     // cross validation
     private LabelTextDataset trainData;
     private LabelTextDataset devData;
@@ -37,6 +40,7 @@ public class CompuframesDataset extends LabelTextDataset {
     private MultiLabelInstances mulanTrainData;
     private MultiLabelInstances mulanDevData;
     private MultiLabelInstances mulanTestData;
+    private DocType docType = DocType.ALL;
 
     public CompuframesDataset(String name, String folder) {
         super(name, folder);
@@ -47,6 +51,10 @@ public class CompuframesDataset extends LabelTextDataset {
             CorpusProcessor corpProc) {
         super(name, folder, corpProc);
         this.documents = new HashMap<String, Document>();
+    }
+
+    public void setDocumentType(DocType dType) {
+        this.docType = dType;
     }
 
     public void loadCorpus(File jsonFile) {
@@ -70,8 +78,16 @@ public class CompuframesDataset extends LabelTextDataset {
 
             for (String key : map.keySet()) {
                 Document doc = map.get(key);
+                if (doc.getIrrelevant().containsValue(1)) { // filter irrelevant
+                    continue;
+                }
+
                 doc.parseAnnotatedSentences();
-                this.documents.put(key, doc);
+                if ((docType == DocType.IMMIGRATION && key.contains("Immigration"))
+                        || (docType == DocType.TOBACCO && key.contains("Tobacco"))
+                        || (docType == DocType.ALL)) {
+                    this.documents.put(key, doc);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -83,9 +99,8 @@ public class CompuframesDataset extends LabelTextDataset {
             logln("--- Loaded " + this.documents.size() + " documents");
         }
 
-        int D = documents.size();
-
         // document-level data
+        int D = documents.size();
         this.docIdList = new ArrayList<String>();
         this.textList = new ArrayList<String>();
         this.labelList = new ArrayList<ArrayList<String>>();
@@ -152,8 +167,6 @@ public class CompuframesDataset extends LabelTextDataset {
 
         // provide I/O for JSON files
     }
-    
-    
 
     @Override
     protected void outputSentTextData(String outputFolder) throws Exception {
@@ -260,7 +273,7 @@ public class CompuframesDataset extends LabelTextDataset {
         }
         reader.close();
     }
-    
+
     @Override
     public void createCrossValidation(String cvFolder, int numFolds,
             double trToDevRatio) throws Exception {
@@ -351,7 +364,7 @@ public class CompuframesDataset extends LabelTextDataset {
                     testData.getFormatFilename() + arffExt));
         }
     }
-    
+
     public void outputLabelVocabXML(String outputFolder) throws Exception {
         // format labels in Mulan's XML
         File labelVocXml = new File(outputFolder, formatFilename + xmlExt);
@@ -370,7 +383,7 @@ public class CompuframesDataset extends LabelTextDataset {
         writer.write("</labels>\n");
         writer.close();
     }
-    
+
     public void loadCrossValidation(String cvFolder, int foldIdx) {
         try {
             Fold fold = new Fold(foldIdx, cvFolder);
@@ -397,7 +410,7 @@ public class CompuframesDataset extends LabelTextDataset {
         labelVocab = trainData.labelVocab;
         wordVocab = trainData.wordVocab;
     }
-    
+
     public LabelTextDataset getTrainData() {
         return this.trainData;
     }
@@ -421,46 +434,4 @@ public class CompuframesDataset extends LabelTextDataset {
     public MultiLabelInstances getMulanTestData() {
         return mulanTestData;
     }
-
-
-//    public static void main(String[] args) {
-//
-//        try {
-//            // create the command line parser
-//            parser = new BasicParser();
-//
-//            // create the Options
-//            options = new Options();
-//
-//            addOption("json-file", "Path to the raw JSON file");
-//
-//            options.addOption("help", false, "Help");
-//            options.addOption("v", false, "verbose");
-//            options.addOption("d", false, "debug");
-//            cmd = parser.parse(options, args);
-//
-//            if (cmd.hasOption("help")) {
-//                CLIUtils.printHelp(getHelpString(CompuframesDataset.class
-//                        .getName()), options);
-//                return;
-//            }
-//
-//            verbose = cmd.hasOption("v");
-//            debug = cmd.hasOption("d");
-//
-//            verbose = true;
-//            debug = true;
-//            String jsonFile = CLIUtils.getStringArgument(cmd, "json-file",
-//                    "rounds_4-9_singly_coded.json");
-//            String datasetFolder = CLIUtils.getStringArgument(cmd, "data-folder",
-//                    "data");
-//            String formatFolder = CLIUtils.getStringArgument(cmd, "format-folder", "format");
-//            CompuframesDataset data = new CompuframesDataset("compuframes", datasetFolder);
-//            data.loadCorpus(new File(jsonFile));
-//            data.format(new File(datasetFolder, formatFolder));
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            throw new RuntimeException();
-//        }
-//    }
 }
